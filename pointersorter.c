@@ -9,8 +9,85 @@
 #include <string.h>
 #include <ctype.h>
 
-int cmp(const void *a, const void *b) {
-	return strcmp(*(char**)a, *(char**)b);
+struct node {
+	char *word;
+	struct node *next;
+};
+
+//helper method that merges two linked lists in sorted order
+struct node* sortedMerge(struct node* a, struct node* b);
+
+//splits linked list into two
+void frontBackSplit(struct node* source, struct node** frontRef, struct node** backRef);
+
+//Merge sort
+void mergesort(struct node** headRef) {
+	struct node* head = *headRef;
+	struct node* a;
+	struct node* b;
+
+	if((head == NULL) || (head->next == NULL)) {
+		return;
+	}
+
+	frontBackSplit(head, &a, &b);
+
+	mergesort(&a);
+	mergesort(&b);
+
+	*headRef = sortedMerge(a, b);
+}
+
+struct node* sortedMerge(struct node* a, struct node*b) {
+	struct node* result = NULL;
+	if(a == NULL) {
+		return(b);
+	} else if(b == NULL) {
+		return(a);
+	}
+
+	if(strcmp(a->word, b->word) < 0) {
+		result = a;
+		result->next = sortedMerge(a->next, b);
+	} else {
+		result = b;
+		result->next = sortedMerge(a, b->next);
+	}
+	return result;
+}
+
+void frontBackSplit(struct node* source, struct node** frontRef, struct node** backRef) {
+	struct node* fast;
+	struct node* slow;
+	if(source == NULL || source->next == NULL) {
+		*frontRef = source;
+		*backRef = NULL;
+	} else {
+		slow = source;
+		fast = source->next;
+
+		while(fast != NULL) {
+			fast = fast->next;
+			if(fast != NULL) {
+				slow = slow->next;
+				fast = fast->next;
+			}
+		}
+
+		*frontRef = source;
+		*backRef = slow->next;
+		slow->next = NULL;
+	}
+}
+
+struct node * createLinkedList(char* str) {
+}
+
+void printLinkedList(struct node *root) {
+	while(root != NULL) {
+		printf("%s\n", root->word);
+		root = root->next;
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -47,16 +124,30 @@ int main(int argc, char *argv[]) {
 	// Tokenizing the adjusted string to an array.
 	// One word per index
 	int j = 0;
-	char *token;
+	char *token = strtok(inputString, " ");
 	char **words = malloc(count);
-	for(token = strtok(inputString, " "); token; token = strtok(NULL, " ")) {
-		words[j++] = token;
+
+	struct node *root, *ptr, *parent;
+	root = malloc(sizeof(struct node));
+	root->next = NULL;
+	root->word = token;
+	ptr = root;
+
+	while(token) {
+		struct node *newNode;
+		newNode = malloc(sizeof(struct node));
+		ptr->next = newNode;
+		token = strtok(NULL, " ");
+		newNode->next = NULL;
+		newNode->word = token;
+		parent = ptr;
+		ptr = ptr->next;
 	}
-	// Quicksorting through the array of words that was tokenized
-	qsort(words, j, sizeof(*words), cmp);
-	// Printing out the words for console display
-	for (i = 0; i < j; i++) {
-		printf("%s\n", words[i]);
-	}
+	parent->next = NULL;
+
+	mergesort(&root);
+
+	printLinkedList(root);
+
 	return 0;
 }
