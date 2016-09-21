@@ -1,15 +1,14 @@
-// Name:	Jeffrey Huang		Richard Li
-// NetID:	jh1127				rl606
+// Jeffrey Huang
+// NetID: jh1127
 // CS214 - Systems Programming
 // Section 2 - Professor Andrew Tjang
-// Assignment 0 - Due September 18, 2016 (Sunday)
+// Assignment 0 - Due September 18, 2016
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-// Implementation to ignore case when comparing the strings to keep lexicographical order.
 int strcicmp(char const *a, char const *b)
 {
     for (;; a++, b++) {
@@ -19,19 +18,18 @@ int strcicmp(char const *a, char const *b)
     }
 }
 
-// Structure for linked list node that is to contain a string of one word.
 struct node {
 	char *word;
 	struct node *next;
 };
 
-// Helper method to merge two linked list in sorted order.
+//helper method that merges two linked lists in sorted order
 struct node* sortedMerge(struct node* a, struct node* b);
 
-// Splits the linked list into two halfs
+//splits linked list into two
 void frontBackSplit(struct node* source, struct node** frontRef, struct node** backRef);
 
-// Merge sort implementation
+//Merge sort
 void mergesort(struct node** headRef) {
 	struct node* head = *headRef;
 	struct node* a;
@@ -67,7 +65,6 @@ struct node* sortedMerge(struct node* a, struct node*b) {
 	return result;
 }
 
-// Splits the linked list into a front and a back reference
 void frontBackSplit(struct node* source, struct node** frontRef, struct node** backRef) {
 	struct node* fast;
 	struct node* slow;
@@ -91,11 +88,21 @@ void frontBackSplit(struct node* source, struct node** frontRef, struct node** b
 		slow->next = NULL;
 	}
 }
-// Method to print the linked list
-void printLinkedList(struct node *root) {
+
+void printLinkedList(struct node *root,  struct node *root2, char* filename, char* str) {
+    FILE *fp;
+    fp = fopen("testcases.txt", "a");
+    fprintf(fp, "==================================================\n");
+    fprintf(fp, "./pointersorter \"%s\"\n", str);
+    fprintf(fp, "--------------------------------------------------\nExpected\n--------------------------------------------------\n");
 	while(root != NULL) {
-		printf("%s\n", root->word);
+		fprintf(fp, "%s\n", root->word);
 		root = root->next;
+	}
+    fprintf(fp, "--------------------------------------------------\nOutput\n--------------------------------------------------\n");
+    while(root2 != NULL) {
+		fprintf(fp, "%s\n", root2->word);
+		root2 = root2->next;
 	}
 }
 
@@ -103,21 +110,21 @@ int main(int argc, char *argv[]) {
 	// Making sure that there are the total of two arguments.
 	//		1) ./project --> argv[0]
 	//		2) string subjected for analysis --> argv[1]
-	if (argc != 2){
+	if (argc >= 2){
 		// Informing console user about improper quantity of arguments
 		printf("Expected number of arguments: 1\nNumber of arguments you have: %d\ni.e. ./pointersorter \"This is a sample line\"\n", (argc-1));
 		return 0;
 	}
-	// Getting length of the string argument.
+	// Getting length of the string argument
 	int stringSize = strlen(argv[1]) + 1;
-	// Moving command string to variable string.
+	// Moving command string to variable string
 	char* inputString;
-	// Creating limited space to hold the string.
+	// Creating limited space to hold the string
 	inputString = malloc(stringSize);
 	inputString = strcat(inputString, argv[1]);
 	int i = 0;
 	int count = 0;
-	// Replacing all non-alphabet characters with spaces.
+	// Replacing all non-alphabet characters to spaces
 	while (inputString[i]) {
 		if (!(isalpha(inputString[i]))){
 			inputString[i] = ' ';
@@ -129,14 +136,12 @@ int main(int argc, char *argv[]) {
 			count++;
 		}
 	}
-	// If the string is only filled with non-alpha characters.
-	// the program terminates with a NULL list and prints nothing.
+	// Tokenizing the adjusted string to an array.
+	// One word per index
 	if(count == 0){
+        printLinkedList(NULL, NULL, argv[0], argv[1]);
 		return 0;
 	}
-
-	// Allocating multiple nodes and the appropriate memory space for each node.
-	// Initializes the node as  well as the first word in the string.
 	char *token = strtok(inputString, " ");
 	struct node *root = (struct node*) malloc(sizeof(struct node));
 	struct node *ptr = (struct node*) malloc(sizeof(struct node));
@@ -144,7 +149,7 @@ int main(int argc, char *argv[]) {
 	root->next = NULL;
 	root->word = token;
 	ptr = root;
-	// Tokenizing the input string into a linked list with one word per node.
+
 	while(token) {
 		struct node *newNode;
 		newNode = malloc(sizeof(struct node));
@@ -156,13 +161,11 @@ int main(int argc, char *argv[]) {
 		parent = ptr;
 		ptr = ptr->next;
 	}
-	// Terminating the linked list to ensure no trash is appended at the end.
 	parent->next = NULL;
-	// Sending linked list to sort method to be sorted by lexicographical order 
-	// (a.k.a - dictionary order).
+
 	mergesort(&root);
-	// Sending linked list to print method to print to console for user to see.
-	printLinkedList(root);
+
+	printLinkedList(root, root, argv[0], argv[1]);
 
 	return 0;
 }
