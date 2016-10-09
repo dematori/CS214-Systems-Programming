@@ -14,7 +14,7 @@ typedef struct freelist{
 	short size;					// 2 bytes
 } metadata;						// 4 bytes <- TOTAL
 
-void *mymalloc(size_t size);
+void* mymalloc(size_t size);
 void myfree(void *ptr);
 
 #endif
