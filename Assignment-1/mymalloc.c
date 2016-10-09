@@ -1,19 +1,12 @@
 #include "mymalloc.h"
 
-static char memoryBlock[10000];				                		// 5000 * 2 bytes
+static char memoryBlock[5000];				                		// 5000 * 2 bytes
 int dataSize = sizeof(metadata);									// 2 bytes
 int memorySize = sizeof(memoryBlock);								// 10000 bytes
 
 void* mymalloc(size_t size){
-	int request = size*dataSize;
+	size_t request = size + dataSize;
 	printf("--Size to be allocated: %d \n", request);
-	printf("--Data size: %d\n", dataSize);
-	printf("--Memory size: %d \n", memorySize);
-	printf("--Old Memory: \n");
-	int i;
-	for(i = 0; i < memorySize; i++){
-		printf("[%c]", memoryBlock[i]);
-	}
 	if(request <= 0){												// allocating 0 space does nothing
 		return;	
 	}
@@ -33,18 +26,17 @@ void* mymalloc(size_t size){
 			int remaining = memory->size;
 			memory->size = (request)*(-1);							// set block size to allocated
 			remaining += memory->size;								// gets remaining free space and initializes the next block to unallocated
-			memory += abs(memory->size);					// jumps to end of newly allocated memory
+			memory += request;											// jumps to end of newly allocated memory
 			memory->size = remaining;								// sets next empty block to remaining size avaliable
 			printf("--Remaining memory: %d\n", remaining);
 			allocated = 1;
-		}else{
-			memory += memory->size + dataSize;
 		}
 	}
 	if(allocated == 0){
 		printf("Not enough memory to be allocated\n");
 	}
-	printf("--New Memory: \n");
+	printf("--Memory: \n");
+	int i;
 	for(i = 0; i < memorySize; i++){
 		printf("[%c]", memoryBlock[i]);
 	}
