@@ -1,57 +1,57 @@
 #include "mymalloc.h"
 
-int dataSize = sizeof(metadata);								// 2 bytes
-static char myblock[5000];						// 5000 * 2 bytes
-int memorySize = sizeof(myblock);								// 10000 bytes
-static metadata *memory = (metadata*) myblock;					// setting char array as memory
-static int firstRun = -1;										// first run indicator
+static char memoryBlock[10000];				                		// 5000 * 2 bytes
+int dataSize = sizeof(metadata);									// 2 bytes
+int memorySize = sizeof(memoryBlock);								// 10000 bytes
 
 void* mymalloc(size_t size){
-	if(firstRun == -1){
-		memory->size = memorySize - dataSize;					// positive size = unallocated
-																// negative size = allocated
-		firstRun = 0;											// no longer first run
+	int request = size*dataSize;
+	printf("--Size to be allocated: %d \n", request);
+	printf("--Data size: %d\n", dataSize);
+	printf("--Memory size: %d \n", memorySize);
+	printf("--Old Memory: \n");
+	int i;
+	for(i = 0; i < memorySize; i++){
+		printf("[%c]", memoryBlock[i]);
 	}
-	if(size <= 0){
-		return memory;											// no changes in memory allocation
+	if(request <= 0){												// allocating 0 space does nothing
+		return;	
 	}
-	metadata *current = memory;
-	metadata *tail = (metadata *) ((char *)memory + memorySize);
-	// --- checking if there is room to allocate requested space to memory
-	while(current->size != 0 && current != tail){
-		if(current->size >= size){
-			break;
+	metadata *memory = (metadata *) memoryBlock;
+	if(memory->size == 0){
+		memory->size = memorySize;
+	}
+	printf("\n--Current memory size: %d\n", memory->size);									
+	metadata *endmemory = (metadata *) (memoryBlock + memorySize);
+	printf("--Memory pointer: %\n", memory);
+	printf("--End memory pointer: %p\n", endmemory);
+	int allocated = 0; 
+	while(memory < endmemory && allocated == 0){
+		if(memory->size < 0){
+			memory += abs(memory->size);							// if block is allocated, jump to next block
+		}else if(request <= abs(memory->size) && memory->size > 0){	// if request size > unallocated block size
+			int remaining = memory->size;
+			memory->size = (request)*(-1);							// set block size to allocated
+			remaining += memory->size;								// gets remaining free space and initializes the next block to unallocated
+			memory += abs(memory->size);					// jumps to end of newly allocated memory
+			memory->size = remaining;								// sets next empty block to remaining size avaliable
+			printf("--Remaining memory: %d\n", remaining);
+			allocated = 1;
 		}else{
-			current = (metadata *) ((char *)memory + dataSize + (abs(current->size) & ~1));
-			if(tail < current){
-				printf("Not enough memory to be allocated.\n");
-				return 0;
-			}
+			memory += memory->size + dataSize;
 		}
 	}
-	// --- allocating requested space in memory since there is room somewhere
-	metadata *limit = (metadata *)((char *)current + dataSize + size);
-	if(tail - limit < 0){
-		printf("Not enough memory to be allocated.\n");
-		return 0;
+	if(allocated == 0){
+		printf("Not enough memory to be allocated\n");
 	}
-	metadata *temp = (metadata *)((char *) current + dataSize + abs(current->size));
-	if(temp == tail){
-		limit->size = (int)((char *)current + memorySize - (char *)limit - dataSize);
-	}else{
-		if((int) ((char *)temp - (char *)current - size - dataSize)){
-			limit->size = (int) ((char *)temp - (char *)current - size - 2*dataSize);
-		}
+	printf("--New Memory: \n");
+	for(i = 0; i < memorySize; i++){
+		printf("[%c]", memoryBlock[i]);
 	}
-	if(limit->size == 0){
-		size += dataSize;
-	}
-	current->size = 0-size;
-	return current + 1;
+	printf("\n");
+	return;
 }
 
 void myfree(void * ptr){
 	
 }
-
-
