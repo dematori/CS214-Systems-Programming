@@ -6,12 +6,18 @@ void main(){
     int x = 0;
     printf("Allocating 1 byte pointers - 3000 times\n");
     for(x = 0; x < 3000; x++){
-        printf("%d - ", (x+1));
+        if((x+1)%5 == 0){
+            printf("\n");
+        }
+        printf("%6d - ", (x+1));
         a[x] = (char*) mymalloc(1);
     }
     printf("Freeing 1 byte pointers - 3000 times\n");
     for(x = 0; x < 3000; x++){
-        printf("%d - ", (x+1));
+        if((x+1)%5 == 0){
+            printf("\n");
+        }
+        printf("%6d - ", (x+1));
         myfree(a[x]);
     }
 }
