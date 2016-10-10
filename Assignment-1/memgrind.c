@@ -14,4 +14,5 @@ void main(){
         printf("%d - ", (x+1));
         myfree(a[x]);
     }
+    myfree(a[2]);
 }
