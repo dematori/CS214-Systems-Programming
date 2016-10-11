@@ -6,7 +6,7 @@ int memorySize = sizeof(memoryBlock);															// 10000 bytes
 
 void* mymalloc(size_t size){
 	if(size <= 0){																				// allocating 0 space does nothing
-		return;	
+		return;
 	}
 	size_t request = size + dataSize;
 	metadata *memory = (metadata *) memoryBlock;
@@ -20,9 +20,9 @@ void* mymalloc(size_t size){
 		if(memory->size < 0){
 			memory = (metadata*)((char*)memory + (abs(memory->size)));							// if block is allocated, jump to next block
 		}else if(request <= abs(memory->size) && memory->size > 0){								// if request size > unallocated block size
-			printf("allocated");
+			printf("%33s", "allocated");
 			int remaining = memory->size;
-		memory->size = (request)*(-1);															// set block size to allocated
+			memory->size = (request)*(-1);														// set block size to allocated
 			remaining += memory->size;															// gets remaining free space and initializes the next block to unallocated
 			retMem = memory;
 			memory = (metadata*)((char*)memory + (abs(memory->size)));							// jumps to end of newly allocated memory
@@ -36,23 +36,24 @@ void* mymalloc(size_t size){
 		printf("Not enough memory to be allocated");
 		return memory;
 	}
+	/**
 	int i;
 	for(i = 0; i < memorySize; i++){
 		printf("[%c]", memoryBlock[i]);
 	}
 	printf("\n");
+	**/
 	return retMem;
 }
 
 void myfree(void * ptr){
 	metadata * point = (metadata *)ptr;
-	point->size = abs(point->size);
 	mergeBlocks(point);
 	return;
 }
 
 void mergeBlocks(metadata * point) {
-	if (point->size == 0){
+	if(point->size >= 0){
 		printf("Pointer does not exist");
 		return;
 	}
@@ -62,29 +63,36 @@ void mergeBlocks(metadata * point) {
 	metadata* next2 = (metadata*)((char*)next1 + (abs(next1->size)));
 	metadata* next3 = (metadata*)((char*)next2 + (abs(next2->size)));
 	int freed = 0;
-	while(next1 <= endmemory && next2 < endmemory && freed == 0){
-		if(memory == point && next1->size > 0){
-			memory->size = abs(memory->size) + next1->size;					// START -> [-3][+5]... --> [8][]...
+	while(memory < endmemory && freed == 0){
+		if(memory == point){
+			memory->size = abs(memory->size);								// START -> [-3*][-5]... --> [3*][-5]...
+			if(next1->size > 0){
+				memory->size += next1->size;					// START -> [3*][5]... --> [8*][0]...
+				next1->size = 0;
+			}
 			freed = 1;
-			break;
 		}else if(next1 == point && next2->size > 0){
-			next1->size = abs(next1->size) + next2->size;					// START -> ...[-3][-4][5]... --> ...[-3][9][]...
+			next1->size = abs(next1->size) + next2->size;					// START -> ...[-3][-4*][5]... --> ...[-3][9*][]...
 			next2->size = 0;
 			if(memory->size > 0){
-				memory->size += abs(next1->size);							// START -> ...[3][-9][0]... --> ...[12][][]...
+				memory->size += abs(next1->size);							// START -> ...[3][-9*][]... --> ...[12][*][]...
 				next1->size = 0;
 			}
 			freed = 1;
 		}else if(next1 == point && memory->size > 0){
 			if(next2->size > 0){
-				next1->size = abs(next1->size) + next2->size;				// START -> ...[3][-4][5]... --> ...[3][9][]...
+				next1->size = abs(next1->size) + next2->size;				// START -> ...[3][-4*][5]... --> ...[3][9][]...
 				next2->size = 0;
 			}
-			memory->size += abs(next1->size);								// START -> ...[3][-9][-3]... --> ...[12][][-3]...
+			memory->size += abs(next1->size);								// START -> ...[3][-9*][-3]... --> ...[12][*][-3]...
 			freed = 1;
-		}else if(next2 == point && next1->size > 0 && next3 == endmemory){
-			next1->size += abs(next2->size);								// ...[3][-4] <- END --> ...[7][[]
-			next2->size = 0;
+		}else if(next2 == point && next3 >= endmemory){
+			if(next1->size > 0){
+				next1->size += abs(next2->size);							// ...[3][-4*] <- END --> ...[7][*]
+				next2->size = 0;
+			}else{
+				next1->size = abs(next1->size);
+			}
 			freed = 1;
 		}else{
 			memory = next1;
@@ -94,15 +102,14 @@ void mergeBlocks(metadata * point) {
 		}
 	}
 	if(freed == 1){
-		printf("freed");
+		printf("%22s", "freed");
 	}
-
+	/**
 	int i;
 	for(i = 0; i < memorySize; i++){
 		printf("[%c]", memoryBlock[i]);
 	}
 	printf("\n");
-
+	**/
 	return;                                                                                                                                              
 }
-	
