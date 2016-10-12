@@ -2,10 +2,7 @@
 #include <time.h>
 #include "mymalloc.h"
 
-
-
-void main(){
-    // --- WORKLOAD A ---
+void workloadA() {
     printf("\n==========WORKLOAD A==========\n");
     char* a[3000];
     int i = 0;
@@ -18,41 +15,7 @@ void main(){
         printf("%7d - ", (i+1));
         a[i] = (char *) mymalloc(1);
     }
-    printf("\n-Freeing 1 byte pointers - 3000 times\n");
-    printf("Freeing a[100]");
-    myfree(a[100]);
-    printf("\n %d - %p\n", ((metadata*)a[99])->size, a[99]);
-    printf("\n %d - %p\n", ((metadata*)a[100])->size, a[100]);
-    printf("\n %d - %p\n", ((metadata*)a[101])->size, a[101]);
-    printf("\n %d - %p\n", ((metadata*)a[102])->size, a[102]);
-    printf("\n %d - %p\n", ((metadata*)a[103])->size, a[103]);
-    printf("\n %d - %p\n", ((metadata*)a[104])->size, a[104]);
-    printf("Freeing a[101]");
-    myfree(a[101]);
-    printf("\n %d - %p\n", ((metadata*)a[99])->size, a[99]);
-    printf("\n %d - %p\n", ((metadata*)a[100])->size, a[100]);
-    printf("\n %d - %p\n", ((metadata*)a[101])->size, a[101]);
-    printf("\n %d - %p\n", ((metadata*)a[102])->size, a[102]);
-    printf("\n %d - %p\n", ((metadata*)a[103])->size, a[103]);
-    printf("\n %d - %p\n", ((metadata*)a[104])->size, a[104]);
-    printf("Freeing a[102]");
-    myfree(a[103]);
-    printf("\n %d - %p\n", ((metadata*)a[99])->size, a[99]);
-    printf("\n %d - %p\n", ((metadata*)a[100])->size, a[100]);
-    printf("\n %d - %p\n", ((metadata*)a[101])->size, a[101]);
-    printf("\n %d - %p\n", ((metadata*)a[102])->size, a[102]);
-    printf("\n %d - %p\n", ((metadata*)a[103])->size, a[103]);
-    printf("\n %d - %p\n", ((metadata*)a[104])->size, a[104]);
-    printf("Freeing a[103]");
-    myfree(a[102]);
-    printf("\n %d - %p\n", ((metadata*)a[99])->size, a[99]);
-    printf("\n %d - %p\n", ((metadata*)a[100])->size, a[100]);
-    printf("\n %d - %p\n", ((metadata*)a[101])->size, a[101]);
-    printf("\n %d - %p\n", ((metadata*)a[102])->size, a[102]);
-    printf("\n %d - %p\n", ((metadata*)a[103])->size, a[103]);
-    printf("\n %d - %p\n", ((metadata*)a[104])->size, a[104]);
-
-            /*
+    
     for(i = 0; i < 3000; i++){
         if((i)%lineSplitter == 0){
             printf("\n\t");
@@ -60,11 +23,15 @@ void main(){
         printf("%7d - ", (i+1));
         myfree(a[i]);
     }
+}
 
+void workloadB() {
     // --- WORKLOAD B ---
     printf("\n==========WORKLOAD B==========\n");
     printf("-Allocating 1 byte pointer - 1 time\n\t");
     printf("%7s - ", "b");
+    int i;
+    int lineSplitter = 8;
     char* b = (char *) mymalloc(1);
     printf("\n-Freeing 1 byte pointer - 3000 times");    
     for(i = 0; i < 3000; i++){
@@ -75,8 +42,9 @@ void main(){
         myfree(b);
     }
     printf("\n");
+}
 
-    // -- WORKLOAD C --
+void workloadC() {
     printf("\n==========WORKLOAD C==========\n");
     printf("-Randomly allocating or freeing 1 byte pointers (3000 times each)\n");
     
@@ -85,14 +53,14 @@ void main(){
 
     int front = 0;
     int rear = -1;
-    char * arr[500];
+    char * arr[3000];
     memset(&arr[0], 0, sizeof(arr));
 
     mallocCount = 0;
     freeCount = 0;
     srand(time(NULL));
 
-    while(mallocCount < 500 && freeCount < 500) {
+    while(mallocCount < 3000 && freeCount < 3000) {
 	int choose;
 	choose = rand();
 	if(choose % 2 == 0) {
@@ -112,7 +80,7 @@ void main(){
 		}
 	}
     }
-    while(mallocCount < 500) {
+    while(mallocCount < 3000) {
 	    arr[rear + 1] = (char *) mymalloc(1);
 	    mallocCount++;
 	    if(arr[rear + 1] != NULL) {
@@ -128,15 +96,139 @@ void main(){
 		    front++;
 	    }
     }
-
-    int i = 0;
-    for(i = 0; i < 500; i++) {
-	metadata * temp = (metadata *) arr[i];
-	printf("%d\n", temp->size);
-    }
-
 	
     printf("Total mallocs done: %d\n", mallocCount);
     printf("Total frees done: %d\n", freeCount);
-    */
+ }
+
+void workloadD() {
+	int mallocCount;
+	int freeCount;
+	
+	int front = 0;
+	int rear = -1;
+	char * arr[3000];
+	memset(&arr[0], 0, sizeof(arr));
+
+	mallocCount = 0;
+	freeCount = 0;
+	srand(time(NULL));
+
+	while(mallocCount < 3000 && freeCount < 3000) {
+		int choose;
+		choose = rand();
+		int size;
+		size = rand();
+		if(choose % 2 == 0) {
+			arr[rear + 1] = (char *) mymalloc(size % 5000);
+			printf("Attempting to malloc: %d\n", size % 5000);
+			printf("Malloced count: %d\n", rear - front + 2);
+			if(arr[rear + 1] != NULL) {
+				rear++;
+			}
+			mallocCount++;
+		}
+		else {
+			myfree(arr[front]);
+			freeCount++;
+			printf("Malloced count: %d\n", rear - front + 2);
+			if(mallocCount > front) {
+				front++;
+			}
+		}
+	}
+	while(mallocCount < 3000) {
+		int size = rand();
+		arr[rear + 1] = (char *) mymalloc(size % 5000);
+		printf("Attempting to malloc: %d\n", size % 5000);
+		printf("Malloced count: %d\n", rear - front + 2);
+		if(arr[rear + 1] != NULL) {
+			rear++;
+		}
+		mallocCount++;
+	}
+	while(front < rear) {
+		myfree(arr[front]);
+		freeCount++;
+		printf("Malloced count: %d\n", rear - front + 2);
+		if(mallocCount > front) {
+			front++;
+		}
+	}
+	printf("Total mallocs done: %d\n", mallocCount);
+	printf("Total frees done: %d\n", freeCount);
 }
+
+void workloadE() {
+	int i = 0;
+	char * arr[1666];
+	for(i = 0; i < 1666; i++) {
+		arr[i] = (char *) mymalloc(1);
+		printf("%d\n", i);
+	}
+	for(i = 0; i < 1666; i += 2) {
+		myfree(arr[i]);
+	}
+	char * test = (char *) mymalloc(2);
+	printf(test);
+	char * test2 = (char *) mymalloc(1);
+	printf(test2);
+	for(i = 0; i < 1666; i++) {
+		myfree(arr[i]);
+	}
+	myfree(test2);
+}
+
+void workloadF() {
+	
+}
+
+void main(){
+	int i = 0;
+	struct timeval t0;
+	struct timeval t1;
+	long elapsed;
+	gettimeofday(&t0, 0);
+	for(i = 0; i < 100; i++) {
+		workloadA();
+	}
+	gettimeofday(&t1, 0);
+	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
+	printf("\nWorkload A runtime: %ld\n", elapsed);
+
+	gettimeofday(&t0, 0);	
+	for(i = 0; i < 100; i++) {
+		workloadB();
+	}
+	gettimeofday(&t1, 0);
+	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
+	printf("\nWorkload B runtime: %ld\n", elapsed);
+
+	gettimeofday(&t0, 0);
+	for(i = 0; i < 100; i++) {
+		workloadC();
+	}
+	gettimeofday(&t1, 0);
+	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
+	printf("\nWorkload C runtime: %ld\n", elapsed);
+
+	gettimeofday(&t0, 0);
+	for(i = 0; i < 100; i++) {
+		workloadD();
+	}
+	gettimeofday(&t1, 0);
+	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
+	printf("\nWorkload D runtime: %ld\n", elapsed);
+
+	gettimeofday(&t0, 0);
+	for(i = 0; i < 100; i++) {
+		workloadE();
+	}
+	gettimeofday(&t1, 0);
+	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
+	printf("\nWorkload E runtime: %ld\n", elapsed);
+
+
+	return;
+}
+
