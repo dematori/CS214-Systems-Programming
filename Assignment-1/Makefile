@@ -1,5 +1,3 @@
-CFLAGS='-g'
-
 output: memgrind.o mymalloc.o
 	gcc memgrind.o mymalloc.o -o output
 

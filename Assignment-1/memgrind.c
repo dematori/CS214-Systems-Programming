@@ -2,9 +2,10 @@
 #include <time.h>
 #include "mymalloc.h"
 
+
+
 void main(){
     // --- WORKLOAD A ---
-   /* 
     printf("\n==========WORKLOAD A==========\n");
     char* a[3000];
     int i = 0;
@@ -15,9 +16,43 @@ void main(){
             printf("\n\t");
         }
         printf("%7d - ", (i+1));
-        a[i] = (char*) mymalloc(1);
+        a[i] = (char *) mymalloc(1);
     }
-    printf("\n-Freeing 1 byte pointers - 3000 times");
+    printf("\n-Freeing 1 byte pointers - 3000 times\n");
+    printf("Freeing a[100]");
+    myfree(a[100]);
+    printf("\n %d - %p\n", ((metadata*)a[99])->size, a[99]);
+    printf("\n %d - %p\n", ((metadata*)a[100])->size, a[100]);
+    printf("\n %d - %p\n", ((metadata*)a[101])->size, a[101]);
+    printf("\n %d - %p\n", ((metadata*)a[102])->size, a[102]);
+    printf("\n %d - %p\n", ((metadata*)a[103])->size, a[103]);
+    printf("\n %d - %p\n", ((metadata*)a[104])->size, a[104]);
+    printf("Freeing a[101]");
+    myfree(a[101]);
+    printf("\n %d - %p\n", ((metadata*)a[99])->size, a[99]);
+    printf("\n %d - %p\n", ((metadata*)a[100])->size, a[100]);
+    printf("\n %d - %p\n", ((metadata*)a[101])->size, a[101]);
+    printf("\n %d - %p\n", ((metadata*)a[102])->size, a[102]);
+    printf("\n %d - %p\n", ((metadata*)a[103])->size, a[103]);
+    printf("\n %d - %p\n", ((metadata*)a[104])->size, a[104]);
+    printf("Freeing a[102]");
+    myfree(a[103]);
+    printf("\n %d - %p\n", ((metadata*)a[99])->size, a[99]);
+    printf("\n %d - %p\n", ((metadata*)a[100])->size, a[100]);
+    printf("\n %d - %p\n", ((metadata*)a[101])->size, a[101]);
+    printf("\n %d - %p\n", ((metadata*)a[102])->size, a[102]);
+    printf("\n %d - %p\n", ((metadata*)a[103])->size, a[103]);
+    printf("\n %d - %p\n", ((metadata*)a[104])->size, a[104]);
+    printf("Freeing a[103]");
+    myfree(a[102]);
+    printf("\n %d - %p\n", ((metadata*)a[99])->size, a[99]);
+    printf("\n %d - %p\n", ((metadata*)a[100])->size, a[100]);
+    printf("\n %d - %p\n", ((metadata*)a[101])->size, a[101]);
+    printf("\n %d - %p\n", ((metadata*)a[102])->size, a[102]);
+    printf("\n %d - %p\n", ((metadata*)a[103])->size, a[103]);
+    printf("\n %d - %p\n", ((metadata*)a[104])->size, a[104]);
+
+            /*
     for(i = 0; i < 3000; i++){
         if((i)%lineSplitter == 0){
             printf("\n\t");
@@ -40,7 +75,7 @@ void main(){
         myfree(b);
     }
     printf("\n");
-    */
+
     // -- WORKLOAD C --
     printf("\n==========WORKLOAD C==========\n");
     printf("-Randomly allocating or freeing 1 byte pointers (3000 times each)\n");
@@ -103,4 +138,5 @@ void main(){
 	
     printf("Total mallocs done: %d\n", mallocCount);
     printf("Total frees done: %d\n", freeCount);
+    */
 }
