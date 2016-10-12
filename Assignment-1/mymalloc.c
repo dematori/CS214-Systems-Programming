@@ -20,7 +20,7 @@ void* mymalloc(size_t size){
 		if(memory->size < 0){
 			memory = (metadata*)((char*)memory + (abs(memory->size)));							// if block is allocated, jump to next block
 		}else if(request <= abs(memory->size) && memory->size > 0){								// if request size > unallocated block size
-			printf("%33s", "allocated");
+			printf("%15s", "allocated");
 			int remaining = memory->size;
 			memory->size = (request)*(-1);														// set block size to allocated
 			remaining += memory->size;															// gets remaining free space and initializes the next block to unallocated
@@ -33,7 +33,7 @@ void* mymalloc(size_t size){
 		}
 	}
 	if(allocated == 0){
-		printf("Not enough memory to be allocated");
+		printf("%15s", "No memory");
 		return memory;
 	}
 	/**
@@ -54,7 +54,7 @@ void myfree(void * ptr){
 
 void mergeBlocks(metadata * point) {
 	if(point->size >= 0){
-		printf("Pointer does not exist");
+		printf("%15s" ,"Invalid pointer");
 		return;
 	}
 	metadata *memory = (metadata *) memoryBlock;
@@ -102,7 +102,7 @@ void mergeBlocks(metadata * point) {
 		}
 	}
 	if(freed == 1){
-		printf("%22s", "freed");
+		printf("%15s", "freed");
 	}
 	/**
 	int i;
