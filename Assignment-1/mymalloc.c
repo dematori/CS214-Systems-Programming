@@ -33,7 +33,7 @@ void* mymalloc(size_t size){
 		}
 	}
 	if(allocated == 0){
-		printf("%15s", "No memory");
+	//	printf("%15s", "No memory");
 		return memory;
 	}
 	/**
@@ -46,6 +46,40 @@ void* mymalloc(size_t size){
 	return retMem;
 }
 
+void myfree(void * ptr) {
+	if(ptr == NULL) {
+		return;
+	}
+	metadata * point = (metadata *) ptr;
+	if(point == NULL) return;
+	if(point->size >= 0) {
+		return;
+	}
+	point->size = abs(point->size);
+	mergeBlocks();
+	return;
+}
+
+void mergeBlocks() {
+	metadata *ptr = (metadata *) memoryBlock;
+	metadata *end = (metadata *) (memoryBlock + memorySize);
+
+	while(ptr < end) {
+		if(ptr->size > 0) {
+			metadata * ptr2 = ptr;
+			while(ptr2->size > 0) {
+				ptr2 = (metadata *) &ptr2 + ptr2->size;
+			}
+			ptr->size = &ptr2 - &ptr;
+			ptr = (metadata *) &ptr2 + ptr2->size;
+		} else {
+			ptr = (metadata *) &ptr + ptr->size;
+		}
+	}
+	return;
+}
+
+/*
 void myfree(void * ptr){
 	if(ptr == NULL){
 		printf("%15s", "Null pointer");
@@ -115,12 +149,12 @@ void mergeBlocks(metadata * point) {
 	if(freed == 1){
 		//printf("%15s", "freed");
 	}
-	/**
+	
 	int i;
 	for(i = 0; i < memorySize; i++){
 		printf("[%c]", memoryBlock[i]);
 	}
 	printf("\n");
-	**/
-	return;                                                                                                                                              
-}
+	
+	return;                                                                                                                                        
+}*/

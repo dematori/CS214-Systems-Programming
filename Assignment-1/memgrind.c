@@ -51,6 +51,7 @@ void main(){
     int front = 0;
     int rear = -1;
     char * arr[500];
+    memset(&arr[0], 0, sizeof(arr));
 
     mallocCount = 0;
     freeCount = 0;
@@ -65,33 +66,41 @@ void main(){
 			rear++;
 			mallocCount++;
 		}
-		printf("Malloc Count: %d\n", rear - front);
+		printf("Malloc Count: %d\n", rear - front + 2);
 	}
 	else {
 		myfree(arr[front]);
 		freeCount++;
-		printf("Free Count: %d\n", rear - front);
+		printf("Free Count: %d\n", rear - front + 2);
 		if(mallocCount > front) {
 			front++;
 		}
 	}
     }
     while(mallocCount < 500) {
-	    arr[mallocCount] = (char *) mymalloc(1);
+	    arr[rear + 1] = (char *) mymalloc(1);
 	    mallocCount++;
-	    if(arr[mallocCount] != NULL) {
+	    if(arr[rear + 1] != NULL) {
 		rear++;
 	    }
-	    printf("Malloc Count: %d\n", rear - front);
+	    printf("Malloc Count: %d\n", rear - front + 2);
     }
     while(front < rear) {
 	    myfree(arr[front]);
 	    freeCount++;
-	    printf("Free Count: %d\n", rear - front);
+	    printf("Free Count: %d\n", rear - front + 2);
 	    if(mallocCount > front) {
 		    front++;
 	    }
     }
+
+    int i = 0;
+    for(i = 0; i < 500; i++) {
+	metadata * temp = (metadata *) arr[i];
+	printf("%d\n", temp->size);
+    }
+
+	
     printf("Total mallocs done: %d\n", mallocCount);
     printf("Total frees done: %d\n", freeCount);
 }
