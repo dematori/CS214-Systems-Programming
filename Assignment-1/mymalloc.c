@@ -20,7 +20,7 @@ void* mymalloc(size_t size){
 		if(memory->size < 0){
 			memory = (metadata*)((char*)memory + (abs(memory->size)));							// if block is allocated, jump to next block
 		}else if(request <= abs(memory->size) && memory->size > 0){								// if request size > unallocated block size
-			printf("%15s", "allocated");
+			//printf("%15s", "allocated");
 			int remaining = memory->size;
 			memory->size = (request)*(-1);														// set block size to allocated
 			remaining += memory->size;															// gets remaining free space and initializes the next block to unallocated
@@ -47,10 +47,14 @@ void* mymalloc(size_t size){
 }
 
 void myfree(void * ptr){
+	if(ptr == NULL){
+		printf("%15s", "Null pointer");
+		return;
+	}
 	metadata * point = (metadata *)ptr;
 	mergeBlocks(point);
 	return;
-}
+} 
 
 void mergeBlocks(metadata * point) {
 	if(point->size >= 0){
@@ -63,7 +67,7 @@ void mergeBlocks(metadata * point) {
 	metadata* next2 = (metadata*)((char*)next1 + (abs(next1->size)));
 	metadata* next3 = (metadata*)((char*)next2 + (abs(next2->size)));
 	int freed = 0;
-	while(memory < endmemory && freed == 0){
+	while(memory < endmemory && freed == 0 && point < 0){
 		if(memory == point){
 			memory->size = abs(memory->size);								// START -> [-3*][-5]... --> [3*][-5]...
 			if(next1->size > 0){
@@ -71,6 +75,7 @@ void mergeBlocks(metadata * point) {
 				next1->size = 0;
 			}
 			freed = 1;
+			break;
 		}else if(next1 == point && next2->size > 0){
 			next1->size = abs(next1->size) + next2->size;					// START -> ...[-3][-4*][5]... --> ...[-3][9*][]...
 			next2->size = 0;
@@ -79,6 +84,7 @@ void mergeBlocks(metadata * point) {
 				next1->size = 0;
 			}
 			freed = 1;
+			break;
 		}else if(next1 == point && memory->size > 0){
 			if(next2->size > 0){
 				next1->size = abs(next1->size) + next2->size;				// START -> ...[3][-4*][5]... --> ...[3][9][]...
@@ -86,6 +92,7 @@ void mergeBlocks(metadata * point) {
 			}
 			memory->size += abs(next1->size);								// START -> ...[3][-9*][-3]... --> ...[12][*][-3]...
 			freed = 1;
+			break;
 		}else if(next2 == point && next3 >= endmemory){
 			if(next1->size > 0){
 				next1->size += abs(next2->size);							// ...[3][-4*] <- END --> ...[7][*]
@@ -94,15 +101,19 @@ void mergeBlocks(metadata * point) {
 				next1->size = abs(next1->size);
 			}
 			freed = 1;
+			break;
 		}else{
 			memory = next1;
-			next1 = (metadata*)((char*)memory + (abs(memory->size)));
-			next2 = (metadata*)((char*)next1 + (abs(next1->size)));
-			next3 = (metadata*)((char*)next2 + (abs(next2->size)));
+			if(memory < endmemory){
+				next1 = (metadata*)((char*)memory + (abs(memory->size)));
+				next2 = (metadata*)((char*)next1 + (abs(next1->size)));
+				next3 = (metadata*)((char*)next2 + (abs(next2->size)));
+			}
+
 		}
 	}
 	if(freed == 1){
-		printf("%15s", "freed");
+		//printf("%15s", "freed");
 	}
 	/**
 	int i;
