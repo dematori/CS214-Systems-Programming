@@ -20,7 +20,7 @@ void* mymalloc(size_t size){
 		if(memory->size < 0){
 			memory = (metadata*)((char*)memory + (abs(memory->size)));							// if block is allocated, jump to next block
 		}else if(request <= abs(memory->size) && memory->size > 0){								// if request size > unallocated block size
-			printf("%15s", "allocated");
+			//printf("%15s", "allocated");
 			int remaining = memory->size;
 			memory->size = (request)*(-1);														// set block size to allocated
 			remaining += memory->size;															// gets remaining free space and initializes the next block to unallocated
@@ -33,7 +33,7 @@ void* mymalloc(size_t size){
 		}
 	}
 	if(allocated == 0){
-		printf("%15s", "No memory");
+		//printf("%15s", "No memory");
 		return memory;
 	}
 	/**
@@ -48,37 +48,48 @@ void* mymalloc(size_t size){
 
 void myfree(void * ptr) {
 	if(ptr == NULL) {
-		printf("%15s", "Null pointer");
+		//printf("%15s", "Null pointer");
 		return;
 	}
 	metadata * point = (metadata *) ptr;
 	if(point == NULL) return;
 	if(point->size >= 0) {
-		printf("%15s", "Invalid Pointer");
+		//printf("%15s", "Invalid Pointer");
 		return;
 	}
 	point->size = abs(point->size);
-	printf("%15s", "freed");
+	//printf("%15s", "freed");
 	mergeBlocks();
 	return;
 }
 void mergeBlocks() {
-	metadata *memory = (metadata *) memoryBlock;
-	metadata *endmemory = (metadata *) (memoryBlock + memorySize);
-	int merged = 0;
-	while((metadata *)((char*)memory + memory->size) <= endmemory && merged == 0) {
-		if(memory->size > 0){
-			metadata* temp = memory;
+	metadata *ptr = (metadata *) memoryBlock;
+	//printf("\nStart address - %p", ptr);
+	metadata *end = (metadata *) (memoryBlock + memorySize);
+	while(ptr < end && ptr->size != 0) {
+		if(ptr->size > 0){
+			metadata* temp = ptr;
+			int hold = 0;
 			while(temp->size > 0){
-				int hold = temp->size;
+				int increment = temp->size;
+				hold += temp->size;
+				//printf("\nHold value - %4d", hold);
 				temp->size = 0;
-				temp = (metadata *)((char *)temp + hold);
+				temp = (metadata *)((char *)temp + increment);
 			}
-			memory->size = (char *)temp - (char *) memory;
-			memory = (metadata *)((char *)temp + temp->size);
-			merged = 1;
+			//printf("\nCurrent pointer - %p", ptr);
+			//printf("\nTemp pointer    - %p", temp);
+			//printf("\nEnd pointer     - %p", end);
+			//printf("\nOld size		  - %d", ptr->size);
+			ptr->size = hold;
+			//ptr = (metadata *)((char *)ptr + hold);
+			break;
+			//printf("\nNew size        - %d", ptr->size);
 		}else{
-			memory = (metadata *)((char *)memory + abs(memory->size));
+			//printf("\nOld pointer 	  - %p", ptr);
+			//printf("\nCurrent size    - %p", ptr->size);
+			ptr = (metadata *)((char *)ptr + abs(ptr->size));
+			//printf("\nNew pointer     - %p", ptr);
 		}
 		/*
 		if(ptr->size > 0) {
