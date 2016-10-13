@@ -181,6 +181,11 @@ void workloadE() {
 
 void workloadF() {
 	//printf("\n==========WORKLOAD F==========\n");
+	int i = 0;
+	for(i = 0; i < 3000; i++) {
+		char * a = (char *) mymalloc(1);
+		myfree(a);
+	}
 }
 
 void main(){
@@ -228,6 +233,14 @@ void main(){
 	gettimeofday(&t1, 0);
 	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
 	printf("\nWorkload E runtime: %ld\n", elapsed);
+
+	gettimeofday(&t0, 0);
+	for(i = 0; i < 100; i++) {
+		workloadF();
+	}
+	gettimeofday(&t1, 0);
+	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
+	printf("\nWorkload F runtime: %ld\n", elapsed);
 
 
 	return;
