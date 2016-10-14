@@ -1,0 +1,13 @@
+Workload E:
+
+1.	For workload E, we chose to test the fragmentation aspect of our malloc and free implementations. 
+2.	First, the entire block of memory is filled with allocations of 1 byte. Then, every other block is freed. 
+3.	The workload then attempts to allocate 2 bytes, but is unable to find a suitable block. 
+4.	Then, the workload attempts to allocate 1 byte, and is successful in doing so. 
+5.	The program then frees all allocations remaining in the block of memory.
+
+Workload F:
+1.	For workload F, we chose to test repetitive allocation and free. Since the directions for workload B grammatically states to allocate 1 byte and attempt to free that 1 byte 3000 times afterwards.
+2.	First, 1 byte is allocated into the memory, then 1 byte is freed.
+3.	The workload then repeats the allocating 1 byte and freeing that one byte for 3000 times.
+4.	After allocating one byte and attempting to free that one byte 3000 times, the workload ends.

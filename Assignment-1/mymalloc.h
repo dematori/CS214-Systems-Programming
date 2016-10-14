@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define malloc( x ) mymalloc(x, __FILE__, __LINE__);	// overriding the declaration of the original malloc()
+#define malloc( x ) mymalloc(x, __FILE__, __LINE__);// overriding the declaration of the original malloc()
 #define free( x ) myfree(x, __FILE__, __LINE__);	// overriding the declaration of the original free()
 
 #define MEM_SIZE 5000								// setting the default size of the memory allocation as 5000
