@@ -10,7 +10,7 @@ int memorySize = sizeof(memoryBlock);										// 10000 bytes
 *	The purpose of this method  is to replicate the malloc() method in the given character array.
 *	parameters: size - size in bytes that the system needs to allocate into the character array
 */
-void* mymalloc(size_t size){
+void* mymalloc(size_t size, char* file, int line){
 	if(size <= 0){															// allocating 0 or negative space returns nothing
 		//printf("ERROR: Cannot allocated negative or 0 bytes");			// error message for user to see, if uncommented
 		return;
@@ -52,7 +52,7 @@ void* mymalloc(size_t size){
 *	The purpose of this method is to replicate the free() method in the given character array
 *	parameters: *ptr - pointer to the location in the character array
 */	
-void myfree(void *ptr) {
+void myfree(void *ptr, char* file, int line) {
 	if(ptr == NULL) {														// if the pointer points to nothing, then ...
 		//printf("%15s", "ERROR: Null pointer");							// ... NULL POINTER error message for user to see, if uncommented
 		return;

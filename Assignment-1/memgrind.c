@@ -200,7 +200,7 @@ void main(){
 	gettimeofday(&t1, 0);
 	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
 	//printf("\nWorkload A:\nmalloc 1 byte 3000 times, then free 1 byte 3000 times");
-	printf("\nWorkload A average runtime: %ld\n", elapsed/100);
+	printf("\nWorkload A average runtime: %ld microseconds\n", elapsed/100);
 
 	gettimeofday(&t0, 0);	
 	for(i = 0; i < 100; i++) {
@@ -209,7 +209,7 @@ void main(){
 	gettimeofday(&t1, 0);
 	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
 	//printf("\nWorkload B:\nmalloc 1 byte, then free 1 byte 3000 times");
-	printf("\nWorkload B average runtime: %ld\n", elapsed/100);
+	printf("\nWorkload B average runtime: %ld microseconds\n", elapsed/100);
 
 	gettimeofday(&t0, 0);
 	for(i = 0; i < 100; i++) {
@@ -218,7 +218,7 @@ void main(){
 	gettimeofday(&t1, 0);
 	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
 	//printf("\nWordload C:\nrandomly malloc or free 1 byte 6000 times with a 3000 limit for malloc and free the rest");
-	printf("\nWorkload C average runtime: %ld\n", elapsed/100);
+	printf("\nWorkload C average runtime: %ld microseconds\n", elapsed/100);
 
 	gettimeofday(&t0, 0);
 	for(i = 0; i < 100; i++) {
@@ -227,7 +227,7 @@ void main(){
 	gettimeofday(&t1, 0);
 	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
 	//printf("\nWorkload D:\nrandomly malloc or free randomly sized bytes 6000 times with a 3000 limit for malloc and free the rest");
-	printf("\nWorkload D average runtime: %ld\n", elapsed/100);
+	printf("\nWorkload D average runtime: %ld microseconds\n", elapsed/100);
 
 	gettimeofday(&t0, 0);
 	for(i = 0; i < 100; i++) {
@@ -236,7 +236,7 @@ void main(){
 	gettimeofday(&t1, 0);
 	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
 	//printf("\nWorkload E:\nmalloc 1 byte 3000 times, free every other allocation then try to malloc 2 bytes then malloc 1 byte");
-	printf("\nWorkload E average runtime: %ld\n", elapsed/100);
+	printf("\nWorkload E average runtime: %ld microseconds\n", elapsed/100);
 
 	gettimeofday(&t0, 0);
 	for(i = 0; i < 100; i++) {
@@ -245,7 +245,7 @@ void main(){
 	gettimeofday(&t1, 0);
 	elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
 	//printf("\nWorkload F:\nmalloc 1 byte then free that 1 byte, then repeat");
-	printf("\nWorkload F average runtime: %ld\n\n", elapsed/100);
+	printf("\nWorkload F average runtime: %ld microseconds\n\n", elapsed/100);
 
 	return;
 }
