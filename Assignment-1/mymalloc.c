@@ -12,7 +12,7 @@ int memorySize = sizeof(memoryBlock);										// 10000 bytes
 */
 void* mymalloc(size_t size, char* file, int line){
 	if(size <= 0){															// allocating 0 or negative space returns nothing
-		//printf("ERROR: Cannot allocated negative or 0 bytes");			// error message for user to see, if uncommented
+		printf("ERROR: Cannot allocated negative or 0 bytes");			// error message for user to see, if uncommented
 		return;
 	}
 	size_t request = size + dataSize;										// setting the size to be added with the request size and the overhead
@@ -40,7 +40,7 @@ void* mymalloc(size_t size, char* file, int line){
 		}
 	}
 	if(allocated == 0){														// if the allocation flag is unchanged from intial state, then ...
-		//printf("%15s", "No memory");										// ... notify the user that there is no memory left to be allocated, if uncommented
+		printf("%15s", "No memory");										// ... notify the user that there is no memory left to be allocated, if uncommented
 		return memory;														// ... return the beginning of the memory pointer which is the end of the memory since there is are no changes.
 	}
 	return retMem;															// return the address of allocation for other program to use
@@ -54,13 +54,13 @@ void* mymalloc(size_t size, char* file, int line){
 */	
 void myfree(void *ptr, char* file, int line) {
 	if(ptr == NULL) {														// if the pointer points to nothing, then ...
-		//printf("%15s", "ERROR: Null pointer");							// ... NULL POINTER error message for user to see, if uncommented
+		printf("%15s", "ERROR: Null pointer");							// ... NULL POINTER error message for user to see, if uncommented
 		return;
 	}
 	metadata * point = (metadata *) ptr;									// else ptr is set as the local pointer
 	if(point == NULL) return;												// if for some reason that the local pointer is null, then return nothing
 	if(point->size >= 0) {													// if point is greater or equal to 0, then ...
-		//printf("%15s", "ERROR: Invalid Pointer");							// ... INVALID POINTER error meessage for user to see if uncommented
+		printf("%15s", "ERROR: Invalid Pointer");							// ... INVALID POINTER error meessage for user to see if uncommented
 		return;
 	}
 	point->size = abs(point->size);											// setting the size of the allocation to positive to show that it is now unallocated
