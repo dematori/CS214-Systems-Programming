@@ -4,3 +4,11 @@
 // Section 2 - Professor Andrew Tjang
 // Assignment 2 - Due November 22, 2016 (Tuesday)
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+int main(int argc, char* argv[]) {
+
+}
