@@ -9,18 +9,26 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <pthread.h>
 
 #define CEIL(x,y) (((x) + (y) - 1) / (y))
 
 int *findSplits(int fileSize);                              // Method to find the partitions for the multipart compression
-void startCompression(int *splitLength);                    // starts the compressions after the partitions are found
-void compress(char* str, int fileNum);                      // compresses the part and prints it to the output file
+void *startCompression(int *splitLength);                    // starts the compressions after the partitions are found
+void *compress(void *source);                                 // compresses the part and prints it to the output file
 FILE *generateOutFile(int fileNum);                         // generates the output file when it doesn't exist and removes any previously existing files
+
+typedef struct _args{
+    int fileN;
+    int index;
+    int size;
+} args;
 
 char *filename;
 char *fileString;
-int breaks;
+int threads;
 int firstFile = 0;
+
 
 /*
 * Main method to get the user input for which file to compress and how many parts to compress the file into.
@@ -31,7 +39,7 @@ int main(int argc, char* argv[]){
         return 0;                                                                                                   // exit the program if the number of arguments is incorrect
     }
     filename = argv[1];                                                                                             // extracts the filename from the arguments
-    breaks = atoi(argv[2]);                                                                                         // extracts the parts from the arguments and converts it to an integer
+    threads = atoi(argv[2]);                                                                                         // extracts the parts from the arguments and converts it to an integer
     FILE *file = fopen(filename, "r");                                                                              // opening the file that is instructed to be read-only
     if(file == NULL){                                                                                               // if the file does not exist in the current directory
        fprintf(stderr, "ERROR: Cannot open file >> %s\n", filename);                                                // informs the user that the file does not exist in the director
@@ -44,50 +52,61 @@ int main(int argc, char* argv[]){
     fread(fileString, fileSize, 1, file);
     fclose(file);
     fileString[fileSize] = '\0';
-    int *parts = findSplits(fileSize);
-    startCompression(parts);
+    startCompression(findSplits(fileSize));        
     return 0;
 }
 
 int *findSplits(int fileSize){
-    if(fileSize < breaks){
+    if(fileSize < threads){
         printf("WARNING: Requested number of compressed chunks exceeds the length of uncompressed.\n");
         printf("         Parts that resulted in no compressions are automatically removed.\n");
-        breaks = fileSize;
+        threads = fileSize;
     }
-    int *splits = (int *) malloc(sizeof(int) * breaks);
+    int *splits = (int *) malloc(sizeof(int) * threads);
     int i;
-    for(i = breaks; i > 0; i--){
+    for(i = threads; i > 0; i--){
         int length = (int) CEIL(fileSize, i);
         fileSize -= length;
-        splits[breaks-i] = length;
+        splits[threads-i] = length;
     }
     return splits;
 }
 
-void startCompression(int *splitLength){
+void *startCompression(int *splitLength){
+    pthread_t pth[threads];
     int currentIndex = 0;
     int i;
-    for(i = 0; i < breaks; i++){
-        int tempLen = splitLength[i];
-        char compStr[tempLen + 1];
-        memcpy(compStr, &fileString[currentIndex], tempLen+1);
-        compStr[tempLen] = '\0';
-        compress(compStr, i, splitLength);
-        currentIndex += tempLen;
+    for(i = 0; i < threads; i++){
+        args *target = (args *)malloc(sizeof(args) + 1);
+        target->fileN = i;
+        target->index = currentIndex;
+        target->size = splitLength[i];
+        printf(">> input data %p - %d - %d - %d\n", target, target->fileN, target->index, target->size);
+        pthread_create(&pth[i], NULL, compress, target);
+        currentIndex += splitLength[i];
     }
+    for(i = 0; i < threads; i++){
+        pthread_join(pth[i],NULL);
+    }
+    return NULL;
 }
 
-void compress(char *src, int fileNum){
+void *compress(void *source){
+    args* input = (args *) source;
+    int fileNum = input->fileN;
+    int currentIndex = input->index;
+    int len = input->size;
+    char src[len + 1];
+    memcpy(src, &fileString[currentIndex], len);
+    src[len] = '\0';
+    printf("<< source data %p - %d - %d - %s\n", source, fileNum, len, src);
     FILE *output = generateOutFile(fileNum);
-    int len = strlen(src);
     int i;
     char currCounting = src[0];
     int counter = 1;
     for(i = 1; i <= len; i++){
         if(!isalpha(currCounting)){
             currCounting = src[i];
-            counter = 1;
         }else{
             if(currCounting == src[i]){
                 counter++;
@@ -105,6 +124,7 @@ void compress(char *src, int fileNum){
         }
     }
     fclose(output);
+    return NULL;
 }
 
 FILE *generateOutFile(int fileNum){
@@ -120,6 +140,7 @@ FILE *generateOutFile(int fileNum){
     }
     char *outname = (char*) malloc(sizeof(filename) + sizeof(char) * 6 + sizeof(int));
     sprintf(outname, "%s_LOLS%d", filename, fileNum);
+    printf("%s\n", outname);
     remove(outname);
     FILE *fp;
     fp = fopen(outname, "a");
