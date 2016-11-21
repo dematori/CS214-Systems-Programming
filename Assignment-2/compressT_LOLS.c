@@ -49,7 +49,7 @@ int main(int argc, char* argv[]){
 int *findSplits(int fileSize){
     if(fileSize < breaks){
         printf("WARNING: Requested number of compressed chunks exceeds the length of uncompressed.\n");
-        printf("         There will be a lot of empty files.\n");
+        printf("         Parts that resulted in no compressions are automatically removed.\n");
         breaks = fileSize;
     }
     int *splits = (int *) malloc(sizeof(int) * breaks);
