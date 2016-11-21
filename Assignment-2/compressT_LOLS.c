@@ -81,7 +81,6 @@ void *startCompression(int *splitLength){
         target->fileN = i;
         target->index = currentIndex;
         target->size = splitLength[i];
-        printf(">> input data %p - %d - %d - %d\n", target, target->fileN, target->index, target->size);
         pthread_create(&pth[i], NULL, compress, target);
         currentIndex += splitLength[i];
     }
@@ -99,7 +98,6 @@ void *compress(void *source){
     char src[len + 1];
     memcpy(src, &fileString[currentIndex], len);
     src[len] = '\0';
-    printf("<< source data %p - %d - %d - %s\n", source, fileNum, len, src);
     FILE *output = generateOutFile(fileNum);
     int i;
     char currCounting = src[0];
@@ -140,7 +138,6 @@ FILE *generateOutFile(int fileNum){
     }
     char *outname = (char*) malloc(sizeof(filename) + sizeof(char) * 6 + sizeof(int));
     sprintf(outname, "%s_LOLS%d", filename, fileNum);
-    printf("%s\n", outname);
     remove(outname);
     FILE *fp;
     fp = fopen(outname, "a");
