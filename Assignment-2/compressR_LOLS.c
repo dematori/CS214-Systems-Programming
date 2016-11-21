@@ -8,11 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #define CEIL(x,y) (((x) + (y) - 1) / (y))
 
-int* findSplits(int fileSize);
-
+int* findSplits(int fileSize, int breaks);
 
 int main(int argc, char* argv[]) {
     //Check and read in arguments
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     long breaks = atoi(argv[2]);
 
     //Opening file and finding file size
-    FILE* file = fopen(filename, 'r');
+    FILE* file = fopen(filename, "r");
     if(file == NULL) {
         fprintf(stderr, "ERROR: Cannot open file >> %s\n", filename);
         exit(1);
@@ -39,29 +39,62 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "ERROR: Breaks requested greater than file size. Amount set to file size\n");
         breaks = size;
     }
-    int* splitLengths = findSplits(size);
-    int numSplits = sizeof(splitLengths) / sizeof(splitLengths[0]);
+    int* splitLengths = findSplits(size, breaks);
+    int numSplits = breaks;
     
     //Generating child/worker processes equal to numSplits. Offset variable used to keep track of where each process is to start
+    //Child process takes parameters {FILE* file, int offset, int length, int num, NULL}, each parameter as a string
     int i;
     int offset = 0;
     for(i = 0; i < numSplits; i++) {
         int pid = fork();
         if(pid == 0) {
-            execvp();
+            char* args[6];
+            args[0] = "./bar";
+            args[1] = filename;
+            int tmp = offset;
+            int len = 1;
+            while(tmp != 0) {
+                tmp /= 10;
+                len++;
+            }
+            char tmp1[len];
+            len = 1;
+            tmp = i;
+            while(tmp != 0) {
+                tmp /= 10;
+                len++;
+            }
+            char tmp2[len];
+            len = 1;
+            tmp = splitLengths[i];
+            while(tmp != 0) {
+                tmp /= 10;
+                len++;
+            }
+            char tmp3[len];
+            sprintf(tmp1, "%d", offset);
+            sprintf(tmp2, "%d", splitLengths[i]);
+            sprintf(tmp3, "%d", i);
+            args[2] = tmp1;
+            args[3] = tmp2;
+            args[4] = tmp3;
+            args[5] = NULL;
+            execv(args[0], args);
         }
-        offset += numSplits[i];
+        offset += splitLengths[i];
     }
+    fclose(file);
 
     return 0;
 }
 
 //Quick function to find what length each split should be, returns int array
-int* findSplits(int fileSize) {
+int* findSplits(int fileSize, int breaks) {
     int* splitLengths = (int*)malloc(breaks);
     splitLengths[0] = 0;
     int i;
-    for(i = 0; i > 0; i--) {
+    for(i = breaks; i > 0; i--) {
         int length = (int) CEIL(fileSize, i);
         fileSize -= length;
         splitLengths[breaks - i] = length;
