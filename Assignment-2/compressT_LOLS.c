@@ -12,30 +12,33 @@
 
 #define CEIL(x,y) (((x) + (y) - 1) / (y))
 
-int *findSplits(int fileSize);
-void startCompression(int *splitLength);
-void compress(char* str, int fileNum, int* splitLength);
-FILE *generateOutFile(int fileNum);
+int *findSplits(int fileSize);                              // Method to find the partitions for the multipart compression
+void startCompression(int *splitLength);                    // starts the compressions after the partitions are found
+void compress(char* str, int fileNum);                      // compresses the part and prints it to the output file
+FILE *generateOutFile(int fileNum);                         // generates the output file when it doesn't exist and removes any previously existing files
 
 char *filename;
 char *fileString;
 int breaks;
 int firstFile = 0;
 
+/*
+* Main method to get the user input for which file to compress and how many parts to compress the file into.
+*/
 int main(int argc, char* argv[]){
-    if (argc != 3){
-        fprintf(stderr, "ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments.\n", (argc-1));
-        return 0;
+    if (argc != 3){                                                                                                 // Number of arguments must be 2 (one for file name and one for the number of parts)
+        fprintf(stderr, "ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments.\n", (argc-1));     // Error message to inform user that there are only supposed to be two arguments
+        return 0;                                                                                                   // exit the program if the number of arguments is incorrect
     }
-    filename = argv[1];
-    breaks = atoi(argv[2]);
-    FILE *file = fopen(filename, "r");
-    if(file == NULL){
-       fprintf(stderr, "ERROR: Cannot open file >> %s\n", filename);
-       exit(1);
+    filename = argv[1];                                                                                             // extracts the filename from the arguments
+    breaks = atoi(argv[2]);                                                                                         // extracts the parts from the arguments and converts it to an integer
+    FILE *file = fopen(filename, "r");                                                                              // opening the file that is instructed to be read-only
+    if(file == NULL){                                                                                               // if the file does not exist in the current directory
+       fprintf(stderr, "ERROR: Cannot open file >> %s\n", filename);                                                // informs the user that the file does not exist in the director
+       exit(1);                                                                                                     // exits the program on missing file
     }
-    fseek(file, 0, SEEK_END);
-    int fileSize = ftell(file);
+    fseek(file, 0, SEEK_END);                                                                                       // finding the end of the file
+    int fileSize = ftell(file);                                                                                     // finding the length of the file
     fseek(file, 0, SEEK_SET);
     fileString = (char *) malloc(fileSize + 1);
     fread(fileString, fileSize, 1, file);
@@ -67,17 +70,15 @@ void startCompression(int *splitLength){
     int i;
     for(i = 0; i < breaks; i++){
         int tempLen = splitLength[i];
-        //printf("           INDEX: %d\n", currentIndex);
         char compStr[tempLen + 1];
         memcpy(compStr, &fileString[currentIndex], tempLen+1);
         compStr[tempLen] = '\0';
-        //printf("        SPLITSTR: %s\n", compStr);
         compress(compStr, i, splitLength);
         currentIndex += tempLen;
     }
 }
 
-void compress(char *src, int fileNum, int* splitLength){
+void compress(char *src, int fileNum){
     FILE *output = generateOutFile(fileNum);
     int len = strlen(src);
     int i;
@@ -86,6 +87,7 @@ void compress(char *src, int fileNum, int* splitLength){
     for(i = 1; i <= len; i++){
         if(!isalpha(currCounting)){
             currCounting = src[i];
+            counter = 1;
         }else{
             if(currCounting == src[i]){
                 counter++;
