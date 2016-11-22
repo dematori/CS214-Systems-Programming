@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 
     gettimeofday(&t1, 0);
     elapsed = (t1.tv_sec - t0.tv_sec) * 10000000 + t1.tv_usec - t0.tv_usec;
-    printf("Runtime for compressR_LOLS.c >> %ld microseconds \n", elapsed / 100);
+    printf("Runtime for compressR_LOLS.c >> %ld milliseconds \n", elapsed / 100);
 
     free(splitLengths);
 
