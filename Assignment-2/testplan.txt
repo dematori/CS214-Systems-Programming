@@ -1,0 +1,54 @@
+test1.txt - basic test case
+==============================================================================================
+jjjjjjjjoooaaaaanrr
+==============================================================================================
+
+test2.txt - testing uppercase and lowercase compression
+==============================================================================================
+aaaAAAbbbBBBcCcCcCDddDddDddEeEeEeEFFFffFFffFFF
+==============================================================================================
+
+test3.txt - testing short compression
+==============================================================================================
+iiiiiiiiiiiiiiiiiiiiiiiiiirrrrrrrrrrrrrjjjjjjjjjjjjjjcccccccccchhhhhhhheeeeeeeeekkkkkkkk
+==============================================================================================
+
+test4.txt - testing compression with random symbol breaks
+==============================================================================================
+aaaa&jjjjjj(iiiiii)ppppppp(jj$kkkkkkkk%lllllllll^hhhhhhhh@nnnnnnnnnn!fffffff.........''''''
+==============================================================================================
+
+test5.txt - testing only symbols with repeats
+==============================================================================================
+)))))))))))))))))))))))))(((((((((((((((((((((((***********************&&&&&&&&&&&&&&&&&&&&
+==============================================================================================
+
+test6.txt - testing compression of a already compressed file
+==============================================================================================
+3a8bi3o5d8f7s6g
+==============================================================================================
+
+test7.txt - testing only symbols with no repeats
+==============================================================================================
+(#@*$&#@(%*^!@)$#(*%)*(@#&$)(!@*#$)(*%)!(@&#)!(@*#
+==============================================================================================
+
+test8.txt - testing continuity
+==============================================================================================
+hhhhhhhhhhhkkkkkkkkkkkkkkkkkkkkoooooooooooooooooooooooiiiiiiiiiiiiiiiiiiiiijjjjjjjjjjjjkkkkkllllhhhhiiiiiiiiibbbbbbbbbbuhhhhhhhhhhhjjjjjjjjjsssssssssuuuuuuuuuqqqqqqqjjjjjjjjcccnnnnnnnffffffffjjjjjjjjjdddddddddkmkmkmssssssssssjjjjjjjjjjerrrrrrrrrrruiiiiiiiiiiidvsvvvvvvvvvvvvvjjjjjjjjjjjjccccccclllllllllzzzzzzzzooooooooooeeeeeeeepppppppppppiiiiiiiiiiiiidddddddddnnnnnnnnnnnvvvvvvvvvvvlllllllddddddddkkkkkksoeighsssssssssssssssssssssjjjjjjjjjjvvvvvvvvviiiiiiiiittttttttthhhhhhhhhddddddddnnnnnnnnnncccccc          444444444jjjjjjjjjxxxxxxx888888888ssssssss(((((((((((((*88888888888sssssssjjjjjjjj333333hhhhhhhxxxxx7777777dddddddjkkkkkkk$$$$$$$$kkkkkkkksssss*********Jjjjjjjj222222nnnnnnnnnnnJJJJJJJJJJJSSSSSSSKKKKKKKKKKKOOOOOOOOnnnnnnnnnuuuuuuuussssssssUUuuuUUUuuuUUUuujjjjjjjjjiiiiiiiinnnnnnnnnl
+==============================================================================================
+
+test9.txt - testing empty file
+==============================================================================================
+
+==============================================================================================
+
+test10.txt - testing compression with same characters but interrupted with symbols
+==============================================================================================
+aa$aaay3yu4iiiiiiiIiiiiiooooo!ooooppppp#Pppppp!
+==============================================================================================
+
+test11.txt
+==============================================================================================
+a!b@c#d$e%f^g&h*i*j(k)k_k+
+==============================================================================================

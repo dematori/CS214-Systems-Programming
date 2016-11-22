@@ -33,10 +33,10 @@ int firstFile = 0;
 * Main method to get the user input for which file to compress and how many parts to compress the file into.
 */
 int main(int argc, char* argv[]){
-    struct timeval t0;
+    /*struct timeval t0;
     struct timeval t1;
     long elapsed;
-    gettimeofday(&t0, 0);
+    gettimeofday(&t0, 0);*/
     if (argc != 3){                                                                                                 // Number of arguments must be 2 (one for file name and one for the number of parts)
         printf("ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments.\n", (argc-1));     // Error message to inform user that there are only supposed to be two arguments
         return 0;                                                                                                   // exit the program if the number of arguments is incorrect
@@ -63,9 +63,10 @@ int main(int argc, char* argv[]){
         }
     }
     startCompression(findSplits(fileSize));
-    gettimeofday(&t1, 0);  
+    free(fileString);
+    /*gettimeofday(&t1, 0);  
     elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
-    printf("Runtime for compressT_LOLS.c >> %ld microseconds\n", elapsed/100);    
+    printf("Runtime for compressT_LOLS.c >> %ld microseconds\n", elapsed/100);*/    
     return 0;
 }
 /*
@@ -85,6 +86,7 @@ int *findSplits(int fileSize){
         fileSize -= length;
         splits[threads-i] = length;
     }
+    free(splits);
     return splits;
 }
 
@@ -103,6 +105,7 @@ void *startCompression(int *splitLength){
         target->size = splitLength[i];
         pthread_create(&pth[i], NULL, compress, target);
         currentIndex += splitLength[i];
+        free(target);
     }
     for(i = 0; i < threads; i++){
         pthread_join(pth[i],NULL);
@@ -157,5 +160,6 @@ FILE *generateOutFile(int fileNum){
     remove(outname);
     FILE *fp;
     fp = fopen(outname, "a");
+    free(outname);
     return fp;
 }
