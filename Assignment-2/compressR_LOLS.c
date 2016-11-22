@@ -9,12 +9,17 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <time.h>
 
 #define CEIL(x,y) (((x) + (y) - 1) / (y))
 
 int* findSplits(int fileSize, int breaks);
 
 int main(int argc, char* argv[]) {
+    struct timeval t0;
+    struct timeval t1;
+    long elapsed;
+    gettimeofday(&t0, 0);
     //Check and read in arguments
     if(argc != 3) {
         fprintf(stderr, "ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments. \n", (argc - 1));
@@ -83,9 +88,13 @@ int main(int argc, char* argv[]) {
             execv(args[0], args);
         }
         offset += splitLengths[i];
+        wait(pid);
+        printf("\nprocess finished >> %d", pid);
     }
     fclose(file);
-
+    gettimeofday(&t1, 0);
+    elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
+    printf("Runtime for compressT_LOLS.c >> %ld microseconds\n", elapsed/100);   
     return 0;
 }
 

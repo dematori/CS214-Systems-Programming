@@ -29,7 +29,6 @@ char *fileString;
 int threads;
 int firstFile = 0;
 
-
 /*
 * Main method to get the user input for which file to compress and how many parts to compress the file into.
 */
@@ -37,11 +36,11 @@ int main(int argc, char* argv[]){
     struct timeval t0;
     struct timeval t1;
     long elapsed;
+    gettimeofday(&t0, 0);
     if (argc != 3){                                                                                                 // Number of arguments must be 2 (one for file name and one for the number of parts)
         printf("ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments.\n", (argc-1));     // Error message to inform user that there are only supposed to be two arguments
         return 0;                                                                                                   // exit the program if the number of arguments is incorrect
     }
-    gettimeofday(&t0, 0);
     filename = argv[1];                                                                                             // extracts the filename from the arguments
     threads = atoi(argv[2]);                                                                                         // extracts the parts from the arguments and converts it to an integer
     FILE *file = fopen(filename, "r");                                                                              // opening the file that is instructed to be read-only
@@ -56,13 +55,23 @@ int main(int argc, char* argv[]){
     fread(fileString, fileSize, 1, file);
     fclose(file);
     fileString[fileSize] = '\0';
+    int fileLen = strlen(filename);
+    int q;
+    for(q = 0; q < fileLen; q++){
+        if(filename[q] == '.'){
+            filename[q] = '_';
+        }
+    }
     startCompression(findSplits(fileSize));
     gettimeofday(&t1, 0);  
     elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
     printf("Runtime for compressT_LOLS.c >> %ld microseconds\n", elapsed/100);    
     return 0;
 }
-
+/*
+* Helper method that splits the length of the string into sublength but does not manipulate the string
+* ie: string length of 19 -> split into 3 parts -> findSplits returns [7, 6, 6]
+*/
 int *findSplits(int fileSize){
     if(fileSize < threads){
         printf("WARNING: Requested number of compressed chunks exceeds the length of uncompressed.\n");
@@ -79,6 +88,10 @@ int *findSplits(int fileSize){
     return splits;
 }
 
+/*
+* Method that starts passes the necessary information to the threads by creating the number of threads
+* as requested by the user indicated by the number of files to be created.
+*/
 void *startCompression(int *splitLength){
     pthread_t pth[threads];
     int currentIndex = 0;
@@ -96,7 +109,10 @@ void *startCompression(int *splitLength){
     }
     return NULL;
 }
-
+/*
+* Method to compress given the information about the starting index, and the length of the substring to 
+* be compressed into the file as requested. 
+*/
 void *compress(void *source){
     args* input = (args *) source;
     int fileNum = input->fileN;
@@ -131,18 +147,11 @@ void *compress(void *source){
     fclose(output);
     return NULL;
 }
-
+/* 
+* Method to create the file that is being written for the compressed data
+* ie: input: bigfile.txt -> output: bigfile_txt_LOLS_S#
+*/
 FILE *generateOutFile(int fileNum){
-    if(firstFile == 0){
-        int fileLen = strlen(filename);
-        int q;
-        for(q = 0; q < fileLen; q++){
-            if(filename[q] == '.'){
-                filename[q] = '_';
-            }
-        }
-        firstFile = 1;
-    }
     char *outname = (char*) malloc(sizeof(filename) + sizeof(char) * 6 + sizeof(int));
     sprintf(outname, "%s_LOLS%d", filename, fileNum);
     remove(outname);
