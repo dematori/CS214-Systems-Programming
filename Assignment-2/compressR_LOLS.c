@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
         pid = fork();
         if(pid == 0) {
             char* args[6];
-            args[0] = "./bar";
+            args[0] = "./compressR_worker_LOLS";
             args[1] = filename;
             int tmp = offset;
             int len = 1;
@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
     }
 
     gettimeofday(&t1, 0);
-    elapsed = (t1.tv_sec-t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+    elapsed = (t1.tv_sec - t0.tv_sec) * 10000000 + t1.tv_usec - t0.tv_usec;
     printf("Runtime for compressR_LOLS.c >> %ld microseconds \n", elapsed / 100);
 
     free(splitLengths);

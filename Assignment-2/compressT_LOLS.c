@@ -12,12 +12,16 @@
 #include <time.h>
 
 #define CEIL(x,y) (((x) + (y) - 1) / (y))
+// Method to find the partitions for the multipart compression
+int *findSplits(int fileSize);
+// starts the compressions after the partitions are found
+void *startCompression(int *splitLength);
+// compresses the part and prints it to the output file
+void *compress(void *source);
+// generates the output file when it doesn't exist and removes any previously existing files
+FILE *generateOutFile(int fileNum);
 
-int *findSplits(int fileSize);                              // Method to find the partitions for the multipart compression
-void *startCompression(int *splitLength);                    // starts the compressions after the partitions are found
-void *compress(void *source);                                 // compresses the part and prints it to the output file
-FILE *generateOutFile(int fileNum);                         // generates the output file when it doesn't exist and removes any previously existing files
-
+// structure to hold the information that is passed to other threads
 typedef struct _args{
     int fileN;
     int index;
@@ -33,23 +37,25 @@ int firstFile = 0;
 * Main method to get the user input for which file to compress and how many parts to compress the file into.
 */
 int main(int argc, char* argv[]){
-    /*struct timeval t0;
+    struct timeval t0;
     struct timeval t1;
     long elapsed;
-    gettimeofday(&t0, 0);*/
-    if (argc != 3){                                                                                                 // Number of arguments must be 2 (one for file name and one for the number of parts)
-        printf("ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments.\n", (argc-1));     // Error message to inform user that there are only supposed to be two arguments
-        return 0;                                                                                                   // exit the program if the number of arguments is incorrect
+    gettimeofday(&t0, 0);
+    // Checking input arguments making sure that user has typed the proper command
+    if (argc != 3){
+        printf("ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments.\n", (argc-1));
+        return 0;
     }
-    filename = argv[1];                                                                                             // extracts the filename from the arguments
-    threads = atoi(argv[2]);                                                                                         // extracts the parts from the arguments and converts it to an integer
-    FILE *file = fopen(filename, "r");                                                                              // opening the file that is instructed to be read-only
-    if(file == NULL){                                                                                               // if the file does not exist in the current directory
-       fprintf(stderr, "ERROR: Cannot open file >> %s\n", filename);                                                // informs the user that the file does not exist in the director
-       exit(1);                                                                                                     // exits the program on missing file
+    // Opening and finding the file size, exit program if there is no file found.
+    filename = argv[1];
+    threads = atoi(argv[2]);
+    FILE *file = fopen(filename, "r");
+    if(file == NULL){
+       fprintf(stderr, "ERROR: Cannot open file >> %s\n", filename);
+       exit(1);
     }
-    fseek(file, 0, SEEK_END);                                                                                       // finding the end of the file
-    int fileSize = ftell(file);                                                                                     // finding the length of the file
+    fseek(file, 0, SEEK_END);
+    int fileSize = ftell(file);
     fseek(file, 0, SEEK_SET);
     fileString = (char *) malloc(fileSize + 1);
     fread(fileString, fileSize, 1, file);
@@ -59,6 +65,7 @@ int main(int argc, char* argv[]){
     if(fileLen == 0){
         printf("WARNING: File is empty.");
     }
+    // Changing the filename to be renamed for the requested output file name
     int q;
     for(q = 0; q < fileLen; q++){
         if(filename[q] == '.'){
@@ -69,9 +76,9 @@ int main(int argc, char* argv[]){
     startCompression(splits);
     free(fileString);
     free(splits);
-    /*gettimeofday(&t1, 0);  
-    elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
-    printf("Runtime for compressT_LOLS.c >> %ld microseconds\n", elapsed/100);*/    
+    gettimeofday(&t1, 0);  
+    elapsed = (t1.tv_sec - t0.tv_sec) * 10000000 + t1.tv_usec - t0.tv_usec;
+    printf("Runtime for compressT_LOLS.c >> %ld milliseconds\n", elapsed/100);
     return 0;
 }
 /*
