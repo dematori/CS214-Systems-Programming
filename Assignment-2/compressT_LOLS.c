@@ -56,6 +56,9 @@ int main(int argc, char* argv[]){
     fclose(file);
     fileString[fileSize] = '\0';
     int fileLen = strlen(filename);
+    if(fileLen == 0){
+        printf("WARNING: File is empty.");
+    }
     int q;
     for(q = 0; q < fileLen; q++){
         if(filename[q] == '.'){

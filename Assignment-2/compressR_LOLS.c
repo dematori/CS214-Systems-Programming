@@ -39,6 +39,7 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "ERROR: Breaks requested greater than file size. Amount set to file size\n");
         breaks = size;
     }
+    fclose(file);
     int* splitLengths = findSplits(size, breaks);
     int numSplits = breaks;
     
@@ -84,15 +85,13 @@ int main(int argc, char* argv[]) {
         }
         offset += splitLengths[i];
     }
-    fclose(file);
-  
+    free(splitLengths);
     return 0;
 }
 
 //Quick function to find what length each split should be, returns int array
 int* findSplits(int fileSize, int breaks) {
     int* splitLengths = (int*)malloc(breaks);
-    splitLengths[0] = 0;
     int i;
     for(i = breaks; i > 0; i--) {
         int length = (int) CEIL(fileSize, i);
