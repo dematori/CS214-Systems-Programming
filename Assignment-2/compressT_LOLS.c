@@ -5,11 +5,11 @@
 // Assignment 2 - Due November 22, 2016 (Tuesday)
 
 #include <stdio.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <pthread.h>
+#include <time.h>
 
 #define CEIL(x,y) (((x) + (y) - 1) / (y))
 
@@ -34,10 +34,14 @@ int firstFile = 0;
 * Main method to get the user input for which file to compress and how many parts to compress the file into.
 */
 int main(int argc, char* argv[]){
+    struct timeval t0;
+    struct timeval t1;
+    long elapsed;
     if (argc != 3){                                                                                                 // Number of arguments must be 2 (one for file name and one for the number of parts)
-        fprintf(stderr, "ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments.\n", (argc-1));     // Error message to inform user that there are only supposed to be two arguments
+        printf("ERROR: Incorrect number of arguments given >> %d. Expected 2 arguments.\n", (argc-1));     // Error message to inform user that there are only supposed to be two arguments
         return 0;                                                                                                   // exit the program if the number of arguments is incorrect
     }
+    gettimeofday(&t0, 0);
     filename = argv[1];                                                                                             // extracts the filename from the arguments
     threads = atoi(argv[2]);                                                                                         // extracts the parts from the arguments and converts it to an integer
     FILE *file = fopen(filename, "r");                                                                              // opening the file that is instructed to be read-only
@@ -52,7 +56,10 @@ int main(int argc, char* argv[]){
     fread(fileString, fileSize, 1, file);
     fclose(file);
     fileString[fileSize] = '\0';
-    startCompression(findSplits(fileSize));        
+    startCompression(findSplits(fileSize));
+    gettimeofday(&t1, 0);  
+    elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
+    printf("Runtime for compressT_LOLS.c >> %ld microseconds\n", elapsed/100);    
     return 0;
 }
 
