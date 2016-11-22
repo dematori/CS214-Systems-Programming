@@ -18,11 +18,11 @@ int main(int argc, char* argv[]) {
     fseek(file, offset, SEEK_SET);
     char str[length + 1];
     fread(str, 1, length, file);
-    str[length + 1] = '\0';
+    str[length] = '\0';
     fclose(file);
 
     //Creating a new file
-    char* outname = (char*) malloc(sizeof(argv[1]) + 4 + sizeof(argv[4]));
+    char* outname = (char*) malloc(sizeof(argv[1]) + 6 + sizeof(argv[4]));
     char* filename = argv[1];
     int fileLen = strlen(filename);
     int i;
@@ -63,5 +63,6 @@ int main(int argc, char* argv[]) {
         }
     }
     fclose(newfile);
+
     return 0;
 }

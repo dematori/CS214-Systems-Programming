@@ -9,6 +9,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <errno.h>
+#include <time.h>
 
 #define CEIL(x,y) (((x) + (y) - 1) / (y))
 
@@ -23,6 +25,12 @@ int main(int argc, char* argv[]) {
     char* filename = argv[1];
     long breaks = atoi(argv[2]);
 
+    //Recording runtime
+    struct timeval t0;
+    struct timeval t1;
+    long elapsed;
+    gettimeofday(&t0, 0);
+
     //Opening file and finding file size
     FILE* file = fopen(filename, "r");
     if(file == NULL) {
@@ -33,13 +41,13 @@ int main(int argc, char* argv[]) {
     fseek(file, 0, SEEK_END);
     long size = ftell(file);
     fseek(file, 0, SEEK_SET);
+    fclose(file);
 
     //Finding what length each split should be, stored in int array
     if(size < breaks) {
         fprintf(stderr, "ERROR: Breaks requested greater than file size. Amount set to file size\n");
         breaks = size;
     }
-    fclose(file);
     int* splitLengths = findSplits(size, breaks);
     int numSplits = breaks;
     
@@ -47,8 +55,9 @@ int main(int argc, char* argv[]) {
     //Child process takes parameters {FILE* file, int offset, int length, int num, NULL}, each parameter as a string
     int i;
     int offset = 0;
+    int pid = 1;
     for(i = 0; i < numSplits; i++) {
-        int pid = fork();
+        pid = fork();
         if(pid == 0) {
             char* args[6];
             args[0] = "./bar";
@@ -85,13 +94,26 @@ int main(int argc, char* argv[]) {
         }
         offset += splitLengths[i];
     }
+
+    while(pid = waitpid(-1, NULL, 0)) {
+        if(errno == ECHILD) {
+            break;
+        }
+    }
+
+    gettimeofday(&t1, 0);
+    elapsed = (t1.tv_sec-t0.tv_sec) * 1000000 + t1.tv_usec - t0.tv_usec;
+    printf("Runtime for compressR_LOLS.c >> %ld microseconds \n", elapsed / 100);
+
     free(splitLengths);
+
     return 0;
 }
 
 //Quick function to find what length each split should be, returns int array
 int* findSplits(int fileSize, int breaks) {
-    int* splitLengths = (int*)malloc(breaks);
+    int* splitLengths = (int*)malloc(sizeof(int) * breaks);
+    splitLengths[0] = 0;
     int i;
     for(i = breaks; i > 0; i--) {
         int length = (int) CEIL(fileSize, i);
