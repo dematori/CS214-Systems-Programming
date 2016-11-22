@@ -89,7 +89,6 @@ int main(int argc, char* argv[]) {
         }
         offset += splitLengths[i];
         wait(pid);
-        printf("\nprocess finished >> %d", pid);
     }
     fclose(file);
     gettimeofday(&t1, 0);
