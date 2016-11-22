@@ -62,8 +62,10 @@ int main(int argc, char* argv[]){
             filename[q] = '_';
         }
     }
-    startCompression(findSplits(fileSize));
+    int* splits = findSplits(fileSize);
+    startCompression(splits);
     free(fileString);
+    free(splits);
     /*gettimeofday(&t1, 0);  
     elapsed = (t1.tv_sec-t0.tv_sec)*1000000 + t1.tv_usec-t0.tv_usec;
     printf("Runtime for compressT_LOLS.c >> %ld microseconds\n", elapsed/100);*/    
@@ -86,7 +88,6 @@ int *findSplits(int fileSize){
         fileSize -= length;
         splits[threads-i] = length;
     }
-    free(splits);
     return splits;
 }
 
