@@ -37,6 +37,7 @@ int firstFile = 0;
 * Main method to get the user input for which file to compress and how many parts to compress the file into.
 */
 int main(int argc, char* argv[]){
+    // Recording the runtime of the program
     struct timeval t0;
     struct timeval t1;
     long elapsed;
@@ -72,7 +73,9 @@ int main(int argc, char* argv[]){
             filename[q] = '_';
         }
     }
+    // String manipulation of finding how long each string segment should be
     int* splits = findSplits(fileSize);
+    // Calling the compression method
     startCompression(splits);
     free(fileString);
     free(splits);
